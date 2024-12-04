@@ -1,0 +1,13 @@
+dist
+build
+logs
+nbproject
+.idea
+.idea/dictionaries
+.idea/*
+examples/bin
+examples/logs
+examples/build
+examples/lib
+bin
+/examples/make.sh

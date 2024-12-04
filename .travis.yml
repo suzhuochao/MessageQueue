@@ -1,0 +1,67 @@
+language: cpp
+
+env:
+ - release
+compiler:
+  - gcc
+
+before_install:
+  - echo $LANG
+  - echo $LC_ALL
+  - echo $TRAVIS_OS_NAME
+  #LINUX
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then  sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then  sudo apt-get update -qq; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then  sudo apt-get install uuid-dev; fi
+  - echo $CXX
+  - echo `g++ --version`
+  #- if [ "$CXX" = "clang++" ]; then sudo apt-get install -qq libstdc++-4.9-dev; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install -qq g++-4.9; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+  #OSX
+  #- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install gcc49; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install cmake; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install libsodium; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then   cd libsodium; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then   ./autogen.sh; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then  ./configure; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then  make;  sudo make install; cd ..; fi
+  - ./autogen.sh
+  - ./configure
+  - make
+  - sudo make install
+  #- sudo /sbin/ldconfig
+  - cd ..
+ 
+before_script:
+ - mkdir build
+ - cd build
+ - cmake -DCMAKE_BUILD_TYPE=Release ..
+
+
+script:
+- make install
+
+branches:
+  only:
+    - master
+
+
+notifications:
+  email: false
+  irc:
+    channels:
+      - "chat.freenode.net#myq"
+    template:
+      - "%{repository}/%{branch} (%{commit} - %{author}): %{build_url}: %{message}"
+  webhooks:
+    on_success: change
+    on_failure: always
+    on_start: always
+
+
+
+os:
+  - linux
+  - osx
+
